@@ -1,22 +1,13 @@
-export class Book {
-  constructor(bookWidth, bookTitle) {
-    this.bookTitle = bookTitle;
-    this.bookWidth = bookWidth;
-  }
+import { Item } from "./Item.js";
 
-  getBookTitle() {
-    return this.bookTitle;
-  }
+export class Book extends Item {
+    constructor(name, bookWidth) {
+        super(name, 'Book');
+        this.bookWidth = bookWidth;
+    }
 
-  setBookTitle(inputTitle) {
-    this.bookTitle = inputTitle;
-  }
-
-  getBookWidth() {
-    return this.bookWidth;
-  }
-
-  setBookWidth(inputWidth) {
-    this.bookWidth = inputWidth;
-  }
+    getSize() {
+        return this.bookWidth;
+    }
 }
+
