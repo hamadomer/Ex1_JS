@@ -1,28 +1,61 @@
 import { Carton } from "./Carton";
-import { Book } from "./Book";
-import { test } from "node:test";
+import { Cloth } from "./cloth";
 
-describe("Book class", () => {
+describe("Carton", () => {
   let carton;
-  let book;
-  test("should create a book and add it to the carton", () => {
-    book = new Book(10, "Harry Potter");
-    carton = new Carton(100);
-    carton.addBook(book);
-    expect(carton.getNumberOfBooksInList()).toBe(1);
+
+  beforeEach(() => {
+    carton = new Carton(100, "Cloth");
   });
 
-   test("should create a book and add it to the carton and then remove it", () => {
-     book = new Book(10, "Harry Potter");
-     carton = new Carton(100);
-     carton.addBook(book);
-     expect(carton.getNumberOfBooksInList()).toBe(1);
-     carton.removeBook(book);
-     expect(carton.getNumberOfBooksInList()).toBe(0);
-   });
+  test("should add a Cloth object to the Carton", () => {
+    const cloth = new Cloth("T shirt", 10);
+    const result = carton.addObject(cloth);
 
-   test("should return correct carton height", () => {
-        carton = new Carton(100);
-        expect(carton.getCartonHeight()).toBe(100)
-   })
+    expect(result).toBe("Done");
+    expect(carton.getNumberOfObjectsInList()).toBe(1);
+    expect(carton.getUsedCartonHeight()).toBe(10);
+  });
+
+  test("should not add a Cloth object if there is not enough space", () => {
+    const cloth = new Cloth("T shirt", 110);
+    const result = carton.addObject(cloth);
+
+    expect(result).toBe(`Can't add the Cloth, not enough space`);
+    expect(carton.getNumberOfObjectsInList()).toBe(0);
+    expect(carton.getUsedCartonHeight()).toBe(0);
+  });
+
+  test("should remove a Cloth object from the Carton", () => {
+    const cloth = new Cloth("T shirt", 10);
+    carton.addObject(cloth);
+    carton.removeObject(cloth);
+
+    expect(carton.getNumberOfObjectsInList()).toBe(0);
+    expect(carton.getUsedCartonHeight()).toBe(0);
+  });
+
+  test("should get the Carton type", () => {
+    expect(carton.getCartonType()).toBe("Cloth");
+  });
+
+  test("should set the Carton type", () => {
+    carton.setCartonType("Book");
+    expect(carton.getCartonType()).toBe("Book");
+  });
+
+  test("should print all objects in the Carton", () => {
+    const cloth1 = new Cloth("T shirt", 10);
+    const cloth2 = new Cloth("Pantlon", 20);
+    carton.addObject(cloth1);
+    carton.addObject(cloth2);
+
+    const consoleSpy = jest.spyOn(console, "log");
+    carton.printAllObjects();
+
+    expect(consoleSpy).toHaveBeenCalledWith(cloth1);
+    expect(consoleSpy).toHaveBeenCalledWith(cloth2);
+
+    consoleSpy.mockRestore();
+  });
 });

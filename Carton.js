@@ -1,48 +1,85 @@
+import { Item } from "./Item.js";
 
-export class Carton {
-
-  constructor(cartonHeight) {
+export class Carton extends Item {
+  constructor(cartonHeight, cartonType) {
+    super("Carton", cartonType);
     this.cartonHeight = cartonHeight;
+    this.cartonType = cartonType;
     this.usedCartonHeight = 0;
-    this.booksList = [];
+    this.objectsList = [];
   }
 
-  addBook(bookToAdd) {
-    if (this.cartonHeight - bookToAdd.getBookWidth() >= 0) {
-      this.booksList.push(bookToAdd);
-      this.cartonHeight -= bookToAdd.getBookWidth();
-      this.usedCartonHeight += bookToAdd.getBookWidth();
+  addObject(objectToAdd) {
+    if (
+      objectToAdd instanceof Carton ||
+      objectToAdd.getTypeOfCarton() === "Carton"
+    ) {
+      if (this.usedCartonHeight + objectToAdd.getSize() <= this.cartonHeight) {
+        this.objectsList.push(objectToAdd);
+
+        objectToAdd.getList().forEach((item) => {
+          this.objectsList.push(item);
+        });
+
+        this.usedCartonHeight += objectToAdd.getSize();
+        this.setCartonType("Carton");
+        return "Done";
+      } else {
+        return `Can't add the ${objectToAdd.constructor.name}, not enough space`;
+      }
+    } else if (objectToAdd.getTypeOfCarton() === this.cartonType) {
+      if (this.usedCartonHeight + objectToAdd.getSize() <= this.cartonHeight) {
+        this.objectsList.push(objectToAdd);
+        this.usedCartonHeight += objectToAdd.getSize();
+        return "Done";
+      } else {
+        return `Can't add the ${objectToAdd.constructor.name}, not enough space`;
+      }
     } else {
-      console.log("Can't add the book, not enough space");
+      return `Can't add the ${objectToAdd.constructor.name} to a carton of type ${this.cartonType}`;
     }
   }
 
-  removeBook(bookToRemove) {
-    const index = this.booksList.indexOf(bookToRemove);
-    if (index !== -1) {
-      this.booksList.splice(index, 1);
-      this.cartonHeight += bookToRemove.getBookWidth();
-      this.usedCartonHeight -= bookToRemove.getBookWidth();
+  removeObject(objectToRemove) {
+    const index = this.objectsList.indexOf(objectToRemove);
+    if (index > -1) {
+      this.objectsList.splice(index, 1);
+      this.usedCartonHeight -= objectToRemove.getSize();
     }
   }
 
-  getNumberOfBooksInList() {
-    return this.booksList.length;
+  getNumberOfObjectsInList() {
+    return this.objectsList.length;
   }
 
-  getCartonHeight() {
-    return this.cartonHeight;
+  getUsedCartonHeight() {
+    return this.usedCartonHeight;
   }
 
-  printAllBooks() {
-    this.booksList.forEach((book) => {
-      console.log(book.getBookTitle());
-    });
+  getSize() {
+    return this.usedCartonHeight;
+  }
+
+  getCartonType() {
+    return this.cartonType;
+  }
+
+  printAllObjects() {
+    this.objectsList.forEach((object) => console.log(object));
+  }
+
+  getList() {
+    return this.objectsList;
+  }
+
+  setCartonType(inputType) {
+    this.cartonType = inputType;
   }
 
   toString() {
-    return `The Carton has ${this.getNumberOfBooksInList()} books and the height used is ${
-      this.usedCartonHeight
-    }`;
+    console.log(
+      `${this.getNumberOfObjectsInList()} : ${this.getUsedCartonHeight()}`
+    );
+    return `The Carton has ${this.getNumberOfObjectsInList()} objects and the height used is ${this.getUsedCartonHeight()}`;
   }
 }
